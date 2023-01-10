@@ -6,15 +6,22 @@ Vue.use(Vuex)
 // Create a new store instance.
 const store = new Vuex.Store({
   state: {
-    counter: 0,
+    data: null,
   },
   mutations: {
-    increment(state) {
-      state.counter++
+    setData(state, data) {
+      state.data = data
+    },
+  },
+  actions: {
+    async loadData({ commit }) {
+      const url = 'https://surgut.ritm3.ru/edu/objects'
+      const { data } = await Vue.axios.get(url)
+      commit('setData', data)
     },
   },
   getters: {
-    counter: (state) => state.counter,
+    data: (state) => state.data,
   },
 })
 
