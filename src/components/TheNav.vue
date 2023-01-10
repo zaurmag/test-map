@@ -2,7 +2,7 @@
   <nav class="nav">
     <ul class="nav__list">
       <li v-for="link in links" :key="link.name" class="nav__item">
-        <router-link class="nav__link" :to="{ name: link.href }">{{
+        <router-link class="nav__link" exact :to="{ name: link.href }">{{
           link.name
         }}</router-link>
       </li>
