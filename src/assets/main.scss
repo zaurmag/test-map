@@ -26,3 +26,48 @@ a {
   font-weight: 400;
   text-align: center;
 }
+
+// Buttons
+.btn {
+  $self: &;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+
+  &--primary {
+    &#{$self} {
+      &--outline {
+        border-color: var(--vt-primary);
+        color: var(--vt-primary);
+
+        &:hover {
+          background-color: var(--vt-primary);
+          border-color: var(--vt-primary);
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  &--danger {
+    &#{$self} {
+      &--outline {
+        border-color: var(--vt-danger);
+        color: var(--vt-danger);
+
+        &:hover {
+          background-color: var(--vt-danger);
+          border-color: var(--vt-danger);
+          color: #fff;
+        }
+      }
+    }
+  }
+}
