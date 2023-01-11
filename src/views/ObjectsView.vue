@@ -17,16 +17,17 @@
 import AppCard from '@/components/AppCard.vue'
 import AppPlaceholderLoader from '@/components/ui/AppPlaceholderLoader.vue'
 import ObjectsFilter from '@/components/objects/ObjectsFilter.vue'
-import { onMounted, ref, computed } from 'vue'
-import { useGetters, useActions } from 'vuex-composition-helpers'
-const { data } = useGetters(['data'])
-const { loadData } = useActions(['loadData'])
+import { ref } from 'vue'
+import { useData } from '../use/data'
 
+const items = ref()
 const loader = ref(true)
 const filter = ref({})
 
-const items = computed(() => {
-  return data.value
+useData().then((data) => {
+  loader.value = false
+
+  items.value = data.value
     .filter((req) => {
       if (filter.value.street) {
         const street1 = req.street1 || ''
@@ -61,11 +62,6 @@ const items = computed(() => {
 
       return req
     })
-})
-
-onMounted(async () => {
-  await loadData()
-  loader.value = false
 })
 </script>
 
