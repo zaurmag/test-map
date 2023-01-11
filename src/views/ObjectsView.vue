@@ -17,7 +17,7 @@
 import AppCard from '@/components/AppCard.vue'
 import AppPlaceholderLoader from '@/components/ui/AppPlaceholderLoader.vue'
 import ObjectsFilter from '@/components/objects/ObjectsFilter.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useData } from '../use/data'
 
 const items = ref()
@@ -27,41 +27,43 @@ const filter = ref({})
 useData().then((data) => {
   loader.value = false
 
-  items.value = data.value
-    .filter((req) => {
-      if (filter.value.street) {
-        const street1 = req.street1 || ''
-        const street2 = req.street2 || ''
+  items.value = computed(() => {
+    return data.value
+      .filter((req) => {
+        if (filter.value.street) {
+          const street1 = req.street1 || ''
+          const street2 = req.street2 || ''
 
-        return (street1 + street2)
-          .trim()
-          .toLowerCase()
-          .includes(filter.value.street.toLowerCase())
-      }
+          return (street1 + street2)
+            .trim()
+            .toLowerCase()
+            .includes(filter.value.street.toLowerCase())
+        }
 
-      return req
-    })
-    .filter((req) => {
-      if (filter.value.state) {
-        return req.state.toString().includes(filter.value.state)
-      }
+        return req
+      })
+      .filter((req) => {
+        if (filter.value.state) {
+          return req.state.toString().includes(filter.value.state)
+        }
 
-      return req
-    })
-    .filter((req) => {
-      if (filter.value.mode && req.mode) {
-        return req.mode.toString().includes(filter.value.mode)
-      }
+        return req
+      })
+      .filter((req) => {
+        if (filter.value.mode && req.mode) {
+          return req.mode.toString().includes(filter.value.mode)
+        }
 
-      return req
-    })
-    .filter((req) => {
-      if (filter.value.type && req.type) {
-        return req.type.includes(filter.value.type)
-      }
+        return req
+      })
+      .filter((req) => {
+        if (filter.value.type && req.type) {
+          return req.type.includes(filter.value.type)
+        }
 
-      return req
-    })
+        return req
+      })
+  })
 })
 </script>
 
