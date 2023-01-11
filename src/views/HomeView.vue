@@ -4,14 +4,14 @@
   </main>
 </template>
 
-<script setup>
-import { onMounted } from 'vue'
-import { useGetters, useActions } from 'vuex-composition-helpers'
-const { data } = useGetters(['data'])
-const { loadData } = useActions(['loadData'])
+<!--<script setup>-->
+<!--import { onMounted } from 'vue'-->
+<!--import { useGetters, useActions } from 'vuex-composition-helpers'-->
 
-onMounted(async () => {
-  await loadData()
-  console.log(data.value)
-})
-</script>
+<!--const { data } = useGetters(['data'])-->
+<!--const { loadData } = useActions(['loadData'])-->
+
+<!--onMounted(async () => {-->
+<!--  await loadData()-->
+<!--})-->
+<!--</script>-->
