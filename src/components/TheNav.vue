@@ -54,6 +54,7 @@ const links = [
 
     &.is-active {
       background-color: hsla(160, 100%, 37%, 0.2);
+      color: var(--vt-c-black-soft);
     }
 
     @media (hover: hover) {
