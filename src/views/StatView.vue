@@ -8,19 +8,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import Chart from 'chart.js/auto'
 import { useData } from '../use/data'
 import { calcObjectState } from '../utils/calc-object-state'
 
 const chart = ref()
+const chartInstance = ref()
 
 const loadChart = async () => {
   try {
     const items = await useData()
     const data = calcObjectState(items)
 
-    new Chart(chart.value, {
+    chartInstance.value = new Chart(chart.value, {
       type: 'doughnut',
       data: {
         labels: [
@@ -48,6 +49,12 @@ const loadChart = async () => {
 }
 
 loadChart()
+
+onUnmounted(() => {
+  if (chartInstance.value) {
+    chartInstance.value.destroy()
+  }
+})
 </script>
 
 <style scoped lang="scss">
