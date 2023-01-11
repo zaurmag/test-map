@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -52,11 +52,13 @@ const props = defineProps({
 const selectText = ref()
 const text = ref(props.placeholder)
 const isOpen = ref(false)
+const mValue = computed(() => props.value)
 
-// const getName = (value) => props.options.find((option) => option.value === value)?.name
-// watch(modelVal, (value) => {
-//   text.value = getName(value) || DEFAULT_TEXT
-// })
+watch(mValue, (value) => {
+  if (value === '') {
+    text.value = props.placeholder
+  }
+})
 
 const toggle = () => {
   isOpen.value = !isOpen.value
@@ -134,6 +136,7 @@ onUnmounted(() => {
       &__dropdown {
         display: block;
       }
+
       &__text {
         &::after {
           transition: transform 0.2s ease;
@@ -167,8 +170,9 @@ onUnmounted(() => {
       &:hover {
         background-color: var(--vt-c-text-dark-2);
       }
+
       &.is-selected {
-        background-color: var(--vt-c-text-dark-2);
+        background-color: hsla(160, 100%, 37%, 0.2);
       }
     }
   }
