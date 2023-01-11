@@ -2,7 +2,7 @@
   <main class="objects">
     <h1 class="heading-title">Объекты</h1>
 
-    <app-placelder-loader v-if="loader" rows="5" cols="5" />
+    <app-placeholder-loader v-if="loader" rows="5" cols="5" />
 
     <template v-else>
       <objects-filter v-model="filter" />
@@ -15,7 +15,7 @@
 
 <script setup>
 import AppCard from '@/components/AppCard.vue'
-import AppPlacelderLoader from '@/components/ui/AppPlaceholderLoader.vue'
+import AppPlaceholderLoader from '@/components/ui/AppPlaceholderLoader.vue'
 import ObjectsFilter from '@/components/objects/ObjectsFilter.vue'
 import { onMounted, ref, computed } from 'vue'
 import { useGetters, useActions } from 'vuex-composition-helpers'
