@@ -1,19 +1,23 @@
 import mapboxgl from 'mapbox-gl'
 import { loadCustomIcons } from '../utils/load-custom-icon'
+import { watch } from 'vue'
 import router from '../router'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_TOKEN
 
-export function useMapbox(geoJsonData) {
+export function useMapbox(geoJsonData, style) {
   const { query } = router.currentRoute
   const red = '#c61010'
   const green = '#229c04'
   const gray = '#7b7b7b'
   const violet = '#e834c9'
+  const LAYER_TRAFFIC_LIGHTS = 'trafficLights'
+  const LAYER_TRAFFIC_LIGHTS_CIRCLE = 'trafficLightsCircle'
+  const SOURCE_TRAFFIC_LIGHTS = 'trafficLightsSource'
 
   const map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/dark-v11',
+    style: 'mapbox://styles/mapbox/streets-v9',
     center: [73.4167, 61.25],
     zoom: 13,
     pitch: 30,
@@ -51,12 +55,79 @@ export function useMapbox(geoJsonData) {
   }
 
   map.on('load', () => {
+    // Show popup and zoom
+    map.on('click', LAYER_TRAFFIC_LIGHTS, zoomObject)
+
+    // Hover state in object
+    let trafficLightID = null
+    map.on('mousemove', LAYER_TRAFFIC_LIGHTS, (event) => {
+      map.getCanvas().style.cursor = 'pointer'
+
+      // Check whether features exist
+      if (event.features.length === 0) return
+
+      // If quakeID for the hovered feature is not null,
+      // use removeFeatureState to reset to the default behavior
+      if (trafficLightID) {
+        map.removeFeatureState({
+          source: SOURCE_TRAFFIC_LIGHTS,
+          id: trafficLightID,
+        })
+      }
+
+      trafficLightID = event.features[0].id
+
+      // When the mouse moves over the earthquakes-viz layer, update the
+      // feature state for the feature under the mouse
+      map.setFeatureState(
+        {
+          source: SOURCE_TRAFFIC_LIGHTS,
+          id: trafficLightID,
+        },
+        {
+          hover: true,
+        }
+      )
+    })
+    map.on('mouseleave', LAYER_TRAFFIC_LIGHTS, () => {
+      if (trafficLightID) {
+        map.setFeatureState(
+          {
+            source: SOURCE_TRAFFIC_LIGHTS,
+            id: trafficLightID,
+          },
+          {
+            hover: false,
+          }
+        )
+      }
+      trafficLightID = null
+
+      // Reset the cursor style
+      map.getCanvas().style.cursor = ''
+    })
+
+    // If isset query zoom and popup current object
+    if (query.id) {
+      const currentObject = geoJsonData.features.find(
+        (object) => object.properties.id === +query.id
+      )
+
+      zoomObject(currentObject)
+    }
+  })
+
+  watch(style, (theme) => {
+    map.setStyle(`mapbox://styles/mapbox/${theme}-v11`)
+  })
+
+  map.on('style.load', () => {
     loadCustomIcons(map, [
       { name: 'trafficLight', url: './traffic-light.svg', sdf: true },
     ])
 
     // Add source
-    map.addSource('trafficLightsSource', {
+    map.addSource(SOURCE_TRAFFIC_LIGHTS, {
       type: 'geojson',
       data: geoJsonData,
       generateId: true,
@@ -64,9 +135,9 @@ export function useMapbox(geoJsonData) {
 
     // Add layer trafficLights
     map.addLayer({
-      id: 'trafficLights',
+      id: LAYER_TRAFFIC_LIGHTS,
       type: 'symbol',
-      source: 'trafficLightsSource',
+      source: SOURCE_TRAFFIC_LIGHTS,
       paint: {
         'icon-color': [
           'case',
@@ -88,9 +159,9 @@ export function useMapbox(geoJsonData) {
 
     // Add layer trafficLightsCircle
     map.addLayer({
-      id: 'trafficLightsCircle',
+      id: LAYER_TRAFFIC_LIGHTS_CIRCLE,
       type: 'circle',
-      source: 'trafficLightsSource',
+      source: SOURCE_TRAFFIC_LIGHTS,
       paint: {
         'circle-stroke-color': [
           'case',
@@ -113,66 +184,5 @@ export function useMapbox(geoJsonData) {
         'circle-radius-transition': { duration: 300 },
       },
     })
-
-    // Show popup and zoom
-    map.on('click', 'trafficLights', zoomObject)
-
-    // Hover state in object
-    let trafficLightID = null
-    map.on('mousemove', 'trafficLights', (event) => {
-      map.getCanvas().style.cursor = 'pointer'
-
-      // Check whether features exist
-      if (event.features.length === 0) return
-
-      // If quakeID for the hovered feature is not null,
-      // use removeFeatureState to reset to the default behavior
-      if (trafficLightID) {
-        map.removeFeatureState({
-          source: 'trafficLightsSource',
-          id: trafficLightID,
-        })
-      }
-
-      trafficLightID = event.features[0].id
-
-      // When the mouse moves over the earthquakes-viz layer, update the
-      // feature state for the feature under the mouse
-      map.setFeatureState(
-        {
-          source: 'trafficLightsSource',
-          id: trafficLightID,
-        },
-        {
-          hover: true,
-        }
-      )
-    })
-    map.on('mouseleave', 'trafficLights', () => {
-      if (trafficLightID) {
-        map.setFeatureState(
-          {
-            source: 'trafficLightsSource',
-            id: trafficLightID,
-          },
-          {
-            hover: false,
-          }
-        )
-      }
-      trafficLightID = null
-
-      // Reset the cursor style
-      map.getCanvas().style.cursor = ''
-    })
-
-    // If isset query zoom and popup current object
-    if (query.id) {
-      const currentObject = geoJsonData.features.find(
-        (object) => object.properties.id === +query.id
-      )
-
-      zoomObject(currentObject)
-    }
   })
 }
