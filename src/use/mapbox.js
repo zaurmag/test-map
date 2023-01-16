@@ -2,8 +2,6 @@ import mapboxgl from 'mapbox-gl'
 import { loadCustomIcons } from '../utils/load-custom-icon'
 import { watch } from 'vue'
 import router from '../router'
-import turfDistance from '@turf/distance'
-import { toFeaturePoint } from '../utils/to-feature-point'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_TOKEN
 

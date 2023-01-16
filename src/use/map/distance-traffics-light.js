@@ -45,7 +45,7 @@ export const useDistanceTrafficsLight = (map) => {
         source: 'sourceTrajectory',
         paint: {
           'line-color': '#16c772',
-          'line-width': 3,
+          'line-width': 5,
         },
       })
     }
