@@ -20,7 +20,13 @@
     <div class="card__item card__item--btn">
       <router-link
         class="btn btn--primary"
-        :to="{ name: 'home', query: { id: object.id } }"
+        :to="{
+          name: 'home',
+          query: {
+            id: object.id,
+            coords: JSON.stringify(object.geom.coordinates),
+          },
+        }"
         >Перейти к объекту</router-link
       >
     </div>

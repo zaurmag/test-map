@@ -108,12 +108,11 @@ export function useMapbox(geoJsonData, style) {
     })
 
     // If isset query zoom and popup current object
-    if (query.id) {
-      const currentObject = geoJsonData.features.find(
-        (object) => object.properties.id === +query.id
-      )
-
-      zoomObject(currentObject)
+    if (query.coords) {
+      map.flyTo({
+        center: JSON.parse(query.coords),
+        zoom: 18,
+      })
     }
   })
 
