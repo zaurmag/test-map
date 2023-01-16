@@ -1,13 +1,37 @@
 import turfDistance from '@turf/distance'
 import { toGeoJsonFeature } from '@/utils/to-geojson-feature'
 import { toFeaturePoint } from '../../utils/to-feature-point'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useDistanceTrafficsLight = (map) => {
   const from = ref([])
   const to = ref([])
   const distance = ref(0)
   const LAYER_TRAFFIC_LIGHTS = 'trafficLights'
+  const SOURCE_TRAJECTORY = 'sourceTrajectory'
+  const LAYER_TRAJECTORY = 'layerTrajectory'
+
+  const setSourceLayer = () => {
+    // Add layer trajectory
+    if (!map.getSource(SOURCE_TRAJECTORY)) {
+      map.addSource(SOURCE_TRAJECTORY, {
+        type: 'geojson',
+        data: toGeoJsonFeature([from.value, to.value]),
+      })
+    }
+
+    if (!map.getLayer(LAYER_TRAJECTORY)) {
+      map.addLayer({
+        id: LAYER_TRAJECTORY,
+        type: 'line',
+        source: 'sourceTrajectory',
+        paint: {
+          'line-color': '#16c772',
+          'line-width': 5,
+        },
+      })
+    }
+  }
 
   // Select points and calc distance
   map.on('click', LAYER_TRAFFIC_LIGHTS, (e) => {
@@ -33,21 +57,13 @@ export const useDistanceTrafficsLight = (map) => {
         })
       }, 1500)
 
-      // Add layer trajectory
-      map.addSource('sourceTrajectory', {
-        type: 'geojson',
-        data: toGeoJsonFeature([from.value, to.value]),
-      })
+      setSourceLayer()
+    }
+  })
 
-      map.addLayer({
-        id: 'layerTrajectory',
-        type: 'line',
-        source: 'sourceTrajectory',
-        paint: {
-          'line-color': '#16c772',
-          'line-width': 5,
-        },
-      })
+  watch([from, to], ([from, to]) => {
+    if (from.length && to.length) {
+      map.on('style.load', setSourceLayer)
     }
   })
 
