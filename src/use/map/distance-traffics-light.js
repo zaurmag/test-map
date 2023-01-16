@@ -5,7 +5,9 @@ import { ref, watch } from 'vue'
 
 export const useDistanceTrafficsLight = (map) => {
   const from = ref([])
+  const fromID = ref(null)
   const to = ref([])
+  const toID = ref(null)
   const distance = ref(0)
   const LAYER_TRAFFIC_LIGHTS = 'trafficLights'
   const SOURCE_TRAJECTORY = 'sourceTrajectory'
@@ -33,14 +35,16 @@ export const useDistanceTrafficsLight = (map) => {
     }
   }
 
-  // Select points and calc distance
-  map.on('click', LAYER_TRAFFIC_LIGHTS, (e) => {
-    const coords = e.features[0].geometry.coordinates
+  const clickTLHandler = (e) => {
+    const object = e.features[0]
+    const coords = object.geometry.coordinates
 
     if (!from.value.length) {
       from.value = coords
+      fromID.value = object.properties.id
     } else if (!to.value.length) {
       to.value = coords
+      toID.value = object.properties.id
     }
 
     if (from.value.length && to.value.length) {
@@ -53,23 +57,59 @@ export const useDistanceTrafficsLight = (map) => {
       setTimeout(() => {
         map.flyTo({
           // center: object.geometry.coordinates,
-          zoom: 16,
+          zoom: 14,
         })
       }, 1500)
 
+      // setSourceLayer()
+    }
+  }
+
+  // Select points and calc distance
+  map.on('click', LAYER_TRAFFIC_LIGHTS, clickTLHandler)
+
+  watch([from, to], ([from, to]) => {
+    if (from.length && to.length) {
       setSourceLayer()
     }
   })
 
-  watch([from, to], ([from, to]) => {
-    if (from.length && to.length) {
-      map.on('style.load', setSourceLayer)
+  map.on('style.load', setSourceLayer)
+
+  const reset = () => {
+    map.flyTo({
+      zoom: 13,
+    })
+
+    if (map.getLayer(LAYER_TRAJECTORY)) {
+      map.removeLayer(LAYER_TRAJECTORY)
     }
-  })
+
+    if (map.getSource(SOURCE_TRAJECTORY)) {
+      map.removeSource(SOURCE_TRAJECTORY)
+    }
+
+    from.value = []
+    to.value = []
+    distance.value = 0
+    fromID.value = null
+    toID.value = null
+
+    map.fire('closeAllPopups')
+
+    // Remove click listener
+    map.off('click', LAYER_TRAFFIC_LIGHTS, clickTLHandler)
+
+    // Remove style listener
+    map.off('style.load', setSourceLayer)
+  }
 
   return {
     from,
     to,
     distance,
+    fromID,
+    toID,
+    reset,
   }
 }

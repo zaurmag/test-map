@@ -11,16 +11,42 @@
           placeholder="Переключить тему" />
       </div>
 
-      <div v-if="isKeysObject(distanceFields)" class="home__control-item">
-        <p
-          v-if="distanceFields.from.length && distanceFields.to.length"
-          class="home__control-label">
-          Расстояние от светофора 1 до светофора 2 —
-          {{ distanceFields.distance }} км.
+      <div class="home__control-item home__control-item--measure-distance">
+        <button
+          v-if="!distanceFields?.from?.length"
+          class="btn btn--blue btn--s30"
+          type="button"
+          @click="measureDistance = true">
+          Измерить расстояние между светофорами
+        </button>
+
+        <p v-if="measureDistance && !distanceFields?.from?.length">
+          Выберите первый светофор
         </p>
-        <p v-else-if="distanceFields.from.length || distanceFields.to.length">
-          Выберите второй светофор для измерения расстояния между ними.
-        </p>
+
+        <template v-if="isKeysObject(distanceFields)">
+          <p
+            v-if="distanceFields.from.length && distanceFields.to.length"
+            class="home__control-label">
+            Расстояние от светофора
+            <strong>#{{ distanceFields.fromID }}</strong> до светофора
+            <strong>#{{ distanceFields.toID }}</strong> —
+            {{ distanceFields.distance }}
+            км.
+          </p>
+
+          <p v-else-if="distanceFields.from.length || distanceFields.to.length">
+            Выберите второй светофор.
+          </p>
+
+          <button
+            v-if="distanceFields?.from?.length"
+            class="btn btn--outline btn--danger btn--s30"
+            type="button"
+            @click="measureDistanceReset">
+            &times;
+          </button>
+        </template>
       </div>
     </div>
 
@@ -30,7 +56,7 @@
 
 <script setup>
 import FormSelect from '@/components/form/FormSelect.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useData } from '../use/data'
 import { jsonToGeojson } from '../utils/json-to-geojson'
 import { useMapbox } from '../use/mapbox'
@@ -54,18 +80,29 @@ const optionsStyle = [
     value: 'dark',
   },
 ]
+const measureDistance = ref(false)
 
 const mapTrafficLights = async () => {
   try {
     const data = await useData()
     const geoJsonData = jsonToGeojson(data.value)
     const map = useMapbox(geoJsonData, style)
-    distanceFields.value = useDistanceTrafficsLight(map)
+    watch(measureDistance, (val) => {
+      if (val) {
+        distanceFields.value = useDistanceTrafficsLight(map)
+      }
+    })
   } catch (e) {
     console.error(e)
 
     throw new Error(e)
   }
+}
+
+const measureDistanceReset = () => {
+  measureDistance.value = false
+  distanceFields.value.reset()
+  distanceFields.value = {}
 }
 
 mapTrafficLights()
@@ -81,6 +118,18 @@ mapTrafficLights()
     &-item {
       display: flex;
       align-items: center;
+
+      &--measure-distance {
+        p {
+          margin-left: 15px;
+        }
+
+        .btn {
+          &:last-child {
+            margin-left: 15px;
+          }
+        }
+      }
 
       &:not(:last-child) {
         margin-right: 20px;

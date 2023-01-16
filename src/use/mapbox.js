@@ -15,12 +15,20 @@ export function useMapbox(geoJsonData, style) {
   const LAYER_TRAFFIC_LIGHTS_CIRCLE = 'trafficLightsCircle'
   const SOURCE_TRAFFIC_LIGHTS = 'trafficLightsSource'
 
+  // Init map
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
     center: [73.4167, 61.25],
     zoom: 13,
     pitch: 30,
+  })
+
+  // Add popup
+  const popup = new mapboxgl.Popup()
+
+  map.on('closeAllPopups', () => {
+    popup.remove()
   })
 
   const zoomObject = (e = {}) => {
@@ -51,7 +59,7 @@ export function useMapbox(geoJsonData, style) {
         ${street2 ? `<p>Улица 2: ${street2}</p>` : ''}
       `
 
-    new mapboxgl.Popup().setLngLat(coordinates).setHTML(html).addTo(map)
+    popup.setLngLat(coordinates).setHTML(html).addTo(map)
   }
 
   map.on('load', () => {

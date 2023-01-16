@@ -8,6 +8,10 @@
   font-weight: normal;
 }
 
+strong {
+  font-weight: 700;
+}
+
 a {
   text-decoration: none;
   color: var(--vt-primary);
@@ -63,6 +67,15 @@ a {
     }
   }
 
+  &--blue {
+    background-color: #0076ff;
+    color: #ffffff;
+
+    &:hover {
+      background-color: darken(#0076ff, 8%);
+    }
+  }
+
   &--danger {
     &#{$self} {
       &--outline {
@@ -76,5 +89,9 @@ a {
         }
       }
     }
+  }
+
+  &--s30 {
+    height: 30px;
   }
 }
