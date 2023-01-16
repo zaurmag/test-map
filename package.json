@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@turf/distance": "^6.5.0",
     "axios": "^1.2.2",
     "chart.js": "^4.1.2",
     "mapbox-gl": "^1.13.0",

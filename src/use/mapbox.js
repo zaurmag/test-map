@@ -2,6 +2,8 @@ import mapboxgl from 'mapbox-gl'
 import { loadCustomIcons } from '../utils/load-custom-icon'
 import { watch } from 'vue'
 import router from '../router'
+import turfDistance from '@turf/distance'
+import { toFeaturePoint } from '../utils/to-feature-point'
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_TOKEN
 
@@ -117,6 +119,7 @@ export function useMapbox(geoJsonData, style) {
     }
   })
 
+  // Select theme
   watch(style, (theme) => {
     map.setStyle(`mapbox://styles/mapbox/${theme}-v11`)
   })
@@ -181,8 +184,10 @@ export function useMapbox(geoJsonData, style) {
           17,
           15,
         ],
-        'circle-radius-transition': { duration: 300 },
+        'circle-radius-transition': { duration: 3000 },
       },
     })
   })
+
+  return map
 }
