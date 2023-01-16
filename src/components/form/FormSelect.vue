@@ -8,8 +8,7 @@
         'btn-light',
         { 'text-secondary': text === 'Выберите...' },
       ]"
-      @click="toggle"
-    >
+      @click="toggle">
       {{ text }}
     </div>
 
@@ -21,8 +20,7 @@
           :class="['select__item', { 'is-selected': text === option.name }]"
           :data-value="option.value"
           :title="option.name"
-          @click="select(option)"
-        >
+          @click="select(option)">
           {{ option.name }}
         </li>
       </ul>
@@ -38,6 +36,7 @@ const props = defineProps({
   value: {
     type: String,
     default: '',
+    required: true,
   },
   options: {
     type: Array,
@@ -50,13 +49,15 @@ const props = defineProps({
 })
 
 const selectText = ref()
-const text = ref(props.placeholder)
+const getName = (value) =>
+  props.options.find((option) => option.value === value)?.name
+const text = ref(getName(props.value) || props.placeholder)
 const isOpen = ref(false)
 const mValue = computed(() => props.value)
 
 watch(mValue, (value) => {
   if (value === '') {
-    text.value = props.placeholder
+    text.value = getName(props.value) || props.placeholder
   }
 })
 

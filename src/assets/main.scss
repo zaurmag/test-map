@@ -8,9 +8,13 @@
   font-weight: normal;
 }
 
+strong {
+  font-weight: 700;
+}
+
 a {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--vt-primary);
   transition: 0.4s;
 }
 
@@ -34,7 +38,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  padding: 4px 15px;
   background-color: transparent;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -42,6 +46,9 @@ a {
   transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 
   &--primary {
+    background-color: var(--vt-primary);
+    color: #fff;
+
     &#{$self} {
       &--outline {
         border-color: var(--vt-primary);
@@ -53,6 +60,19 @@ a {
           color: #fff;
         }
       }
+    }
+
+    &:hover {
+      background-color: darken(hsla(160, 100%, 37%, 1), 8%);
+    }
+  }
+
+  &--blue {
+    background-color: #0076ff;
+    color: #ffffff;
+
+    &:hover {
+      background-color: darken(#0076ff, 8%);
     }
   }
 
@@ -69,5 +89,9 @@ a {
         }
       }
     }
+  }
+
+  &--s30 {
+    height: 30px;
   }
 }

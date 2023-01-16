@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import AppCard from '@/components/AppCard.vue'
+import AppCard from '@/components/objects/ObjectsCard.vue'
 import AppPlaceholderLoader from '@/components/ui/AppPlaceholderLoader.vue'
 import ObjectsFilter from '@/components/objects/ObjectsFilter.vue'
 import { ref, computed } from 'vue'
